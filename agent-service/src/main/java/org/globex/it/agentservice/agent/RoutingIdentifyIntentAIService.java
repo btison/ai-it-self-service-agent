@@ -7,7 +7,7 @@ import jakarta.inject.Singleton;
 
 @RegisterAiService(modelName = "routingintent")
 @Singleton
-public interface RoutingIdentifyIntentAgent {
+public interface RoutingIdentifyIntentAIService {
 
     @SystemMessage("""
               You are a routing agent specializing in getting users to the correct specialist agent. Be helpful, friendly, and efficient in determining their needs.
