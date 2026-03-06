@@ -245,16 +245,15 @@ public class SessionManager {
     }
 
     private String routeToSpecialist(String agentName, String message, String sessionId, String userId) {
-//        Agent agent = agentManager.getAgent(agentName);
-//        String sessionName = generateSessionName(userId, agentName);
-//        ConversationSession conversationSession = createSessionForAgent(agent, sessionName, userId, null);
-//        Session session = new Session();
-//        session.setConversationSession(conversationSession);
-//        session.setThreadId(conversationSession.getThreadId());
-//        session.setAgentName(agentName);
-//        session.setSessionName(sessionName);
-//        updateSessionInDatabase(sessionId, session);
-//        return session.getConversationSession().sendMessage(message);
-        return "response from specialist agent";
+        Agent agent = agentManager.getAgent(agentName);
+        String sessionName = generateSessionName(userId, agentName);
+        ConversationSession conversationSession = createSessionForAgent(agent, sessionName, userId, null);
+        Session session = new Session();
+        session.setConversationSession(conversationSession);
+        session.setThreadId(conversationSession.getThreadId());
+        session.setAgentName(agentName);
+        session.setSessionName(sessionName);
+        updateSessionInDatabase(sessionId, session);
+        return session.getConversationSession().sendMessage(message);
     }
 }

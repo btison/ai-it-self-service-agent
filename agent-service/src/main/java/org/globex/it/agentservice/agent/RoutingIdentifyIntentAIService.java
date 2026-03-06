@@ -1,11 +1,12 @@
 package org.globex.it.agentservice.agent;
 
+import dev.langchain4j.model.chat.request.ChatRequestParameters;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
 import jakarta.inject.Singleton;
 
-@RegisterAiService(modelName = "routingintent")
+@RegisterAiService(modelName = "routing")
 @Singleton
 public interface RoutingIdentifyIntentAIService {
 
@@ -23,6 +24,6 @@ public interface RoutingIdentifyIntentAIService {
     @UserMessage("""
             Ask them to describe what they need help with.
             """)
-    String greetAndIdentifyNeed();
+    String greetAndIdentifyNeed(String userMessage, ChatRequestParameters chatRequestParameters);
 
 }

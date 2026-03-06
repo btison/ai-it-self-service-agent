@@ -1,11 +1,12 @@
 package org.globex.it.agentservice.agent;
 
+import dev.langchain4j.model.chat.request.ChatRequestParameters;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
 import jakarta.inject.Singleton;
 
-@RegisterAiService(modelName = "routingother")
+@RegisterAiService(modelName = "routing")
 @Singleton
 public interface RoutingHandleOtherRequestsAIService {
 
@@ -26,6 +27,6 @@ public interface RoutingHandleOtherRequestsAIService {
             
             Be helpful and professional.
             """)
-    String handleOtherRequest(String userMessage);
+    String handleOtherRequest(String userMessage, ChatRequestParameters chatRequestParameters);
 
 }

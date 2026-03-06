@@ -9,26 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class LlmProcessorCommandAction {
 
-    public static CommandAction<org.globex.it.agentservice.graph.State> get0(String currentState, String nextNode, Supplier<String> supplier) {
-        return get0(currentState, nextNode, null, supplier);
+    public static CommandAction<org.globex.it.agentservice.graph.State> get(String currentState, String defaultTransition, Function<String, String> function) {
+        return get(currentState, defaultTransition, null, function);
     }
 
-    public static CommandAction<org.globex.it.agentservice.graph.State> get0(String currentState, String defaultTransition, List<TransitionCondition> conditions, Supplier<String> supplier) {
-        return (state, config) -> {
-            String response = supplier.get();
-            return processResponse(state, currentState, defaultTransition, conditions, response);
-        };
-    }
-
-    public static CommandAction<org.globex.it.agentservice.graph.State> get1(String currentState, String nextNode, Function<String, String> function) {
-        return get1(currentState, nextNode, null, function);
-    }
-
-    public static CommandAction<org.globex.it.agentservice.graph.State> get1(String currentState, String defaultTransition, List<TransitionCondition> conditions, Function<String, String> function) {
+    public static CommandAction<org.globex.it.agentservice.graph.State> get(String currentState, String defaultTransition, List<TransitionCondition> conditions, Function<String, String> function) {
         return (state, config) -> {
             //get last user message from state
             Message humanMessage = state.lastHumanMessage();

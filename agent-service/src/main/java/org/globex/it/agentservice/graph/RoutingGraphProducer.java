@@ -1,5 +1,6 @@
 package org.globex.it.agentservice.graph;
 
+import dev.langchain4j.model.chat.request.ChatRequestParameters;
 import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -16,8 +17,8 @@ import org.globex.it.agentservice.agent.RoutingIdentifyIntentAIService;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static org.bsc.langgraph4j.GraphDefinition.END;
 import static org.bsc.langgraph4j.GraphDefinition.START;
@@ -64,21 +65,21 @@ public class RoutingGraphProducer {
                 .addBusinessField(new BusinessField("routing_decision", String.class, null));
     }
 
-    CommandAction<State> identifyNeedCommandAction = LlmProcessorCommandAction.get0("greet_and_identify_need",
-            "waiting_user_need", new Supplier<>() {
-        @Override
-        public String get() {
-            return identifyIntentAgent.greetAndIdentifyNeed();
-        }
-    });
-
-    CommandAction<State> handleOtherRequestCommandAction = LlmProcessorCommandAction.get1("handle_other_request",
+    CommandAction<State> identifyNeedCommandAction = LlmProcessorCommandAction.get("greet_and_identify_need",
             "waiting_user_need", new Function<>() {
-        @Override
-        public String apply(String input) {
-            return handleOtherRequestsAgent.handleOtherRequest(input);
-        }
-    });
+                @Override
+                public String apply(String input) {
+                    return identifyIntentAgent.greetAndIdentifyNeed(input, buildChatRequestParameters(0.3));
+                }
+            });
+
+    CommandAction<State> handleOtherRequestCommandAction = LlmProcessorCommandAction.get("handle_other_request",
+            "waiting_user_need", new Function<>() {
+                @Override
+                public String apply(String input) {
+                    return handleOtherRequestsAgent.handleOtherRequest(input, buildChatRequestParameters(0.3));
+                }
+            });
 
     List<TransitionCondition> conditions = List.of(
             TransitionCondition.builder()
@@ -101,13 +102,13 @@ public class RoutingGraphProducer {
                     .build()
     );
 
-    CommandAction<State> classifyIntentCommandAction = LlmProcessorCommandAction.get1("classify_user_intent",
-            "handle_other_request", conditions, new Function<>() {
-        @Override
-        public String apply(String input) {
-            return routingAgent.classifyUserIntent(input);
-        }
-    });
+    CommandAction<State> classifyIntentCommandAction = LlmProcessorCommandAction.get("classify_user_intent",
+            "handle_other_request", conditions, new Function<String, String>() {
+                @Override
+                public String apply(String input) {
+                    return routingAgent.classifyUserIntent(input, buildChatRequestParameters(0.1));
+                }
+            });
 
     CommandAction<State> waitingUserNeedCommandAction = WaitingCommandAction.get("waiting_user_need", "classify_user_intent");
 
@@ -160,6 +161,12 @@ public class RoutingGraphProducer {
                 .interruptBefore("wait")
                 .build();
         return graph.compile(compileConfig);
+    }
+
+    private ChatRequestParameters buildChatRequestParameters(double temperature) {
+        return ChatRequestParameters.builder()
+                .temperature(temperature)
+                .build();
     }
 
 }

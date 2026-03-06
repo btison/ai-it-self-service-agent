@@ -1,5 +1,6 @@
 package org.globex.it.agentservice.agent;
 
+import dev.langchain4j.model.chat.request.ChatRequestParameters;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
@@ -30,6 +31,6 @@ public interface RoutingAIService {
             
               Respond with exactly one of: LAPTOP_REFRESH, EMAIL_CHANGE, or OTHER
             """)
-    String classifyUserIntent(String userMessage);
+    String classifyUserIntent(String userMessage, ChatRequestParameters chatRequestParameters);
 
 }
