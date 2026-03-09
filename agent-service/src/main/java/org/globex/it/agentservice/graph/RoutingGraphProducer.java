@@ -1,6 +1,5 @@
 package org.globex.it.agentservice.graph;
 
-import dev.langchain4j.model.chat.request.ChatRequestParameters;
 import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -17,7 +16,6 @@ import org.globex.it.agentservice.agent.RoutingIdentifyIntentAIService;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static org.bsc.langgraph4j.GraphDefinition.END;
@@ -69,7 +67,7 @@ public class RoutingGraphProducer {
             "waiting_user_need", new Function<>() {
                 @Override
                 public String apply(String input) {
-                    return identifyIntentAgent.greetAndIdentifyNeed(input, buildChatRequestParameters(0.3));
+                    return identifyIntentAgent.greetAndIdentifyNeed(input);
                 }
             });
 
@@ -77,7 +75,7 @@ public class RoutingGraphProducer {
             "waiting_user_need", new Function<>() {
                 @Override
                 public String apply(String input) {
-                    return handleOtherRequestsAgent.handleOtherRequest(input, buildChatRequestParameters(0.3));
+                    return handleOtherRequestsAgent.handleOtherRequest(input);
                 }
             });
 
@@ -103,10 +101,10 @@ public class RoutingGraphProducer {
     );
 
     CommandAction<State> classifyIntentCommandAction = LlmProcessorCommandAction.get("classify_user_intent",
-            "handle_other_request", conditions, new Function<String, String>() {
+            "handle_other_request", conditions, new Function<>() {
                 @Override
                 public String apply(String input) {
-                    return routingAgent.classifyUserIntent(input, buildChatRequestParameters(0.1));
+                    return routingAgent.classifyUserIntent(input);
                 }
             });
 
@@ -161,12 +159,6 @@ public class RoutingGraphProducer {
                 .interruptBefore("wait")
                 .build();
         return graph.compile(compileConfig);
-    }
-
-    private ChatRequestParameters buildChatRequestParameters(double temperature) {
-        return ChatRequestParameters.builder()
-                .temperature(temperature)
-                .build();
     }
 
 }
