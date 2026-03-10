@@ -31,6 +31,9 @@ public class SessionManager {
     @Inject
     AgentManager agentManager;
 
+    @Inject
+    AuthorativeUserIdHolder authorativeUserIdHolder;
+
     public String handleMessage(String message, String sessionId, String userId) {
 
         String messagePreview = message.length() < 100 ? message : message.substring(0, 100);
@@ -98,6 +101,7 @@ public class SessionManager {
         requestSession.setConversationContext(Map.of("agent_name",session.getAgentName(),
                 "session_type","responses_api","last_updated",
                 OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS).toString()));
+        authorativeUserIdHolder.setUserId(requestSession.getUser().getPrimaryEmail());
     }
 
     private ConversationSession createSessionForAgent(Agent agent, String sessionName, String userId, String threadId) {
@@ -152,7 +156,6 @@ public class SessionManager {
                     return null;
                 }
             }
-
         }
         return session;
     }
@@ -166,7 +169,9 @@ public class SessionManager {
             Log.warnf("No response session found for sessionId: %s", sessionId);
             return null;
         }
-        return (RequestSession)requestSessions.getFirst();
+        RequestSession requestSession = (RequestSession)requestSessions.getFirst();
+        authorativeUserIdHolder.setUserId(requestSession.getUser().getPrimaryEmail());
+        return requestSession;
     }
 
     private boolean isSpecialistSession(Session session) {
