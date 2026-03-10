@@ -13,6 +13,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.globex.it.agentservice.agent.RoutingAIService;
 import org.globex.it.agentservice.agent.RoutingHandleOtherRequestsAIService;
 import org.globex.it.agentservice.agent.RoutingIdentifyIntentAIService;
+import org.globex.it.agentservice.service.AuthorativeUserIdHolder;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -63,21 +64,21 @@ public class RoutingGraphProducer {
                 .addBusinessField(new BusinessField("routing_decision", String.class, null));
     }
 
-    CommandAction<State> identifyNeedCommandAction = LlmProcessorCommandAction.get("greet_and_identify_need",
-            "waiting_user_need", new Function<>() {
+    CommandAction<State> identifyNeedCommandAction = LlmProcessorCommandAction.get(new LlmProcessorCommandActionParams("greet_and_identify_need",
+            "waiting_user_need", null, null, new Function<>() {
                 @Override
                 public String apply(String input) {
                     return identifyIntentAgent.greetAndIdentifyNeed(input);
                 }
-            });
+            }));
 
-    CommandAction<State> handleOtherRequestCommandAction = LlmProcessorCommandAction.get("handle_other_request",
-            "waiting_user_need", new Function<>() {
+    CommandAction<State> handleOtherRequestCommandAction = LlmProcessorCommandAction.get(new LlmProcessorCommandActionParams("handle_other_request",
+            "waiting_user_need", null, null, new Function<>() {
                 @Override
                 public String apply(String input) {
                     return handleOtherRequestsAgent.handleOtherRequest(input);
                 }
-            });
+            }));
 
     List<TransitionCondition> conditions = List.of(
             TransitionCondition.builder()
@@ -100,13 +101,13 @@ public class RoutingGraphProducer {
                     .build()
     );
 
-    CommandAction<State> classifyIntentCommandAction = LlmProcessorCommandAction.get("classify_user_intent",
-            "handle_other_request", conditions, new Function<>() {
+    CommandAction<State> classifyIntentCommandAction = LlmProcessorCommandAction.get(new LlmProcessorCommandActionParams("classify_user_intent",
+            "handle_other_request", null, conditions, new Function<>() {
                 @Override
                 public String apply(String input) {
                     return routingAgent.classifyUserIntent(input);
                 }
-            });
+            }));
 
     CommandAction<State> waitingUserNeedCommandAction = WaitingCommandAction.get("waiting_user_need", "classify_user_intent");
 
