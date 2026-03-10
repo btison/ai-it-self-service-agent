@@ -1,0 +1,39 @@
+servicenow:
+  enabled: true
+  applicationName: servicenow
+  applicationNamespace: openshift-gitops
+  destinationNamespace: it-agent
+  source:
+    repoUrl: https://github.com/btison/ai-it-self-service-agent.git
+    targetRevision: main
+    path: install/helm/servicenow
+    helm:
+      values: {}
+
+  argocd:
+    enabled: true
+    syncwave: "0"
+
+servicenowMcp:
+  enabled: true
+  applicationName: servicenow-mcp
+  applicationNamespace: openshift-gitops
+  destinationNamespace: it-agent
+  source:
+    repoUrl: https://github.com/btison/ai-it-self-service-agent.git
+    targetRevision: main
+    path: install/helm/servicenow-mcp
+    helm:
+      values:
+        route:
+          host: 
+        servicenow:
+          url: http://servicenow:8080
+          apiKey:
+          laptopRefreshId:
+
+  argocd:
+    enabled: true
+    syncwave: "0"
+
+

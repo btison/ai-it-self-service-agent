@@ -1,0 +1,37 @@
+{{- if .Values.servicenowMcp.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.servicenowMcp.applicationName }}
+  namespace: {{ .Values.servicenowMcp.applicationNamespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ .Values.servicenowMcp.argocd.syncwave }}"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  destination:
+    name: ""
+    namespace: {{ .Values.servicenowMcp.destinationNamespace }}
+    server: 'https://kubernetes.default.svc'
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m0s
+      limit: 10
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  source:
+    repoURL: {{ .Values.servicenowMcp.source.repoUrl }}
+    targetRevision: {{ .Values.servicenowMcp.source.targetRevision }}
+    path: {{ .Values.servicenowMcp.source.path }}
+    helm:
+      valuesObject:
+        {{- toYaml .Values.servicenowMcp.source.helm.values | nindent 8 }}
+{{- end }}

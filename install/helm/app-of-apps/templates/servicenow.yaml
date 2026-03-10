@@ -1,0 +1,37 @@
+{{- if .Values.servicenow.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.servicenow.applicationName }}
+  namespace: {{ .Values.servicenow.applicationNamespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ .Values.servicenow.argocd.syncwave }}"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  destination:
+    name: ""
+    namespace: {{ .Values.servicenow.destinationNamespace }}
+    server: 'https://kubernetes.default.svc'
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m0s
+      limit: 10
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  source:
+    repoURL: {{ .Values.servicenow.source.repoUrl }}
+    targetRevision: {{ .Values.servicenow.source.targetRevision }}
+    path: {{ .Values.servicenow.source.path }}
+    helm:
+      valuesObject:
+        {{- toYaml .Values.servicenow.source.helm.values | nindent 8 }}
+{{- end }}
