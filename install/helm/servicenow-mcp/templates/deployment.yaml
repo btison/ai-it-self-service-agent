@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    {{- include "servicenow-mcp.argocd-syncwave" . | nindent 4 }}
+  labels:
+    {{- include "servicenow-mcp.labels" . | nindent 4 }}
+  name: {{ include "servicenow-mcp.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "servicenow-mcp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "servicenow-mcp.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      serviceAccountName: {{ include "servicenow-mcp.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image:  "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.containerPort }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: MCP_TRANSPORT
+              value: {{ .Values.mcp.transport }}
+            - name: SERVICENOW_INSTANCE_URL
+              value: {{ .Values.servicenow.url }}
+            - name: SERVICENOW_API_KEY
+              value: {{ .Values.servicenow.apiKey }}
+            - name: SERVICENOW_LAPTOP_REFRESH_ID
+              value: {{ .Values.servicenow.laptopRefreshId }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
