@@ -1,0 +1,11 @@
+[all:vars]
+
+# routing
+moderation_llm_api_key=
+moderation_llm_model_name=
+moderation_llm_base_url=
+
+# laptop-refresh
+emailwriter_llm_api_key=
+emailwriter_llm_model_name=
+emailwriter_llm_base_url=

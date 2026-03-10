@@ -1,0 +1,14 @@
+---
+
+- name: Install Demo
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  run_once: true
+
+  tasks:
+    - name: "Install Demo"
+      ansible.builtin.include_role:
+        name: ocp4_workload_it_self_service_agent
+      vars:
+        ACTION: create
