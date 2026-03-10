@@ -9,3 +9,6 @@ moderation_llm_base_url=
 emailwriter_llm_api_key=
 emailwriter_llm_model_name=
 emailwriter_llm_base_url=
+
+# servicenow
+servicenow_api_key=

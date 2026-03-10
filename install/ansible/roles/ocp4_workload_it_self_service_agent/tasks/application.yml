@@ -1,0 +1,11 @@
+---
+
+- name: Create application
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'application/application.yaml.j2') | from_yaml }}"
+  register: application_result
+
+- name: Print result from the previous task
+  ansible.builtin.debug:
+    var: application_result

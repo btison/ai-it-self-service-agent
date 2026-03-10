@@ -148,3 +148,23 @@ ocp4_workload_it_self_service_agent_openshift_gitops_resource_customizations: |
   #     return hs
 
 ocp4_workload_it_self_service_agent_openshift_gitops_ignore_differences: {}
+
+# ------------------------------------------------
+# App of apps
+# ------------------------------------------------
+
+ocp4_workload_it_self_service_agent_servicenow_api_key: "{{ servicenow_api_key }}"
+
+# ------------------------------------------------
+# App of apps
+# ------------------------------------------------
+
+ocp4_workload_it_self_service_agent_app_application_name: it-self-service-agent
+ocp4_workload_it_self_service_agent_app_application_namespace: openshift-gitops
+
+ocp4_workload_it_self_service_agent_app_namespace: openshift-gitops
+
+ocp4_workload_it_self_service_agent_app_gitops_repo: https://github.com/btison/ai-it-self-service-agent.git
+ocp4_workload_it_self_service_agent_app_gitops_repo_tag: main
+ocp4_workload_it_self_service_agent_app_gitops_repo_path: install/helm/app-of-apps
+

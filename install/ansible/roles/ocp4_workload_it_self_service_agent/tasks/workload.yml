@@ -6,3 +6,5 @@
 - name: Install OpenShift Gitops
   ansible.builtin.include_tasks: openshift_gitops.yml
 
+- name: IT Self Service Agent app
+  ansible.builtin.include_tasks: application.yml
